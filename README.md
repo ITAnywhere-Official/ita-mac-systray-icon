@@ -144,4 +144,4 @@ See [ADR-002](docs/adr/002-programmatic-icon-generation.md) for the rationale be
 
 ## Licence
 
-MIT
+Proprietary — Copyright (c) 2026 IT Anywhere. All rights reserved.
