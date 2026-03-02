@@ -3,7 +3,7 @@ name = "ita-mac-systray-icon"
 version = "0.1.0"
 edition = "2024"
 description = "A macOS menu bar tray icon that links to the IT Anywhere self-service portal"
-repository = "https://github.com/IT-Anywhere/ita-mac-systray-icon"
+repository = "https://github.com/ITAnywhere-Official/ita-mac-systray-icon"
 license = "LicenseRef-Proprietary"
 
 [dependencies]

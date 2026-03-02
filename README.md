@@ -9,6 +9,15 @@ A lightweight macOS menu bar application that provides quick access to the IT An
 - **"Quit"** to exit the application
 - No other functionality; intentionally minimal
 
+## Platform Notes
+
+This is a **macOS-targeted** application, but the code is cross-platform (the `tray-icon`, `tao`, and `open` crates all support Windows, macOS, and Linux). It will compile and run on Windows for development and testing purposes.
+
+Key differences when running on non-macOS:
+
+- **Template image tinting** — the monochrome black+alpha icon is designed for macOS's automatic light/dark mode tinting. On Windows it appears as a plain dark icon in the system tray (functional, but not macOS-native looking).
+- **Deployment** — the `launchd` plist and N-central deployment scripts in this README are macOS-specific. Windows auto-start would use the registry or startup folder instead, but this is not a supported deployment target.
+
 ## Building
 
 ### Prerequisites
@@ -36,13 +45,33 @@ cargo build --release --target aarch64-apple-darwin
 
 > **Note:** Cross-compiling for macOS from Linux/Windows requires additional toolchain setup (e.g., [osxcross](https://github.com/tpober/osxcross)). Building natively on a Mac or using macOS CI runners is recommended.
 
+## Downloads
+
+Pre-built macOS binaries are available from GitHub Releases:
+
+**Latest release:** https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/tag/v0.1.0
+
+| Binary                                      | Target                      |
+|---------------------------------------------|-----------------------------|
+| `ita-mac-systray-icon-aarch64-apple-darwin` | Apple Silicon (M1/M2/M3/M4) |
+| `ita-mac-systray-icon-x86_64-apple-darwin`  | Intel Mac                   |
+
+### Quick Test
+
+```bash
+chmod +x ~/Downloads/ita-mac-systray-icon-*
+~/Downloads/ita-mac-systray-icon-*
+```
+
+> **Note:** macOS may block the binary as it's from an unidentified developer. Go to **System Settings → Privacy & Security** and click "Allow Anyway", then run it again.
+
 ## Deployment
 
-This application is intended to be deployed to client machines via **N-central** (or any RMM/MDM tool).
+This application is intended to be deployed to client machines via **N-central** (or any RMM/MDM tool). When deployed via a management agent, macOS Gatekeeper is bypassed and no code signing is required.
 
 ### Deployment Steps
 
-1. Build the release binary on a Mac (or via CI)
+1. Download the appropriate binary from [GitHub Releases](https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/latest)
 2. Distribute the binary to the target Mac endpoint (e.g., `/usr/local/bin/ita-mac-systray-icon`)
 3. Install the launch agent plist so it starts automatically at user login
 
@@ -84,7 +113,7 @@ An N-central automation policy can run a script like:
 #!/bin/bash
 # Deploy ita-mac-systray-icon
 
-BINARY_URL="https://github.com/IT-Anywhere/ita-mac-systray-icon/releases/latest/download/ita-mac-systray-icon"
+BINARY_URL="https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/latest/download/ita-mac-systray-icon-aarch64-apple-darwin"
 INSTALL_PATH="/usr/local/bin/ita-mac-systray-icon"
 PLIST_PATH="/Library/LaunchAgents/com.itanywhere.systray.plist"
 
