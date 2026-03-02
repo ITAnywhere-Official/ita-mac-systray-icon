@@ -126,11 +126,21 @@ https://itanywhere.halopsa.com/portal/
 
 ## Icon
 
-The application currently uses a placeholder blue square icon. Replace with a branded IT Anywhere icon before release. The icon should be:
+The application generates a **bullseye icon** programmatically — inspired by the target/bullseye motif in the IT Anywhere logo. It's drawn as monochrome black with alpha transparency, making it a macOS "template image" that automatically adapts to light and dark menu bars.
 
-- **22x22 px** (@1x) or **44x44 px** (@2x retina)
+No external image files or additional dependencies are needed.
+
+### Improving the Icon
+
+For a polished release, the programmatic icon should be replaced with designer-produced PNG assets:
+
+- **22x22 px** (@1x) for standard displays
+- **44x44 px** (@2x) for Retina displays
 - PNG format with transparency
-- Monochrome recommended (macOS menu bar convention — the OS applies light/dark mode automatically to template images)
+- Monochrome recommended (macOS applies light/dark mode tinting automatically to template images)
+- The bullseye/target from the ITA logo is the recommended motif
+
+See [ADR-002](docs/adr/002-programmatic-icon-generation.md) for the rationale behind the current approach.
 
 ## Licence
 

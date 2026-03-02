@@ -28,14 +28,18 @@ cargo fmt
 
 ## Architecture
 
-This is intentionally a tiny, single-file application:
+```
+src/
+├── main.rs    — entry point, wires modules together, owns PORTAL_URL constant
+├── icon.rs    — bullseye icon generation (pixel math, no external assets)
+└── tray.rs    — tray icon construction, menu building, event loop
+docs/
+└── adr/       — architecture decision records
+```
 
-- `src/main.rs` — the entire application
-- Creates a menu bar icon using `tray-icon` crate
-- Uses `tao` for the event loop
-- Uses `open` to launch the browser
-
-There are no modules, no config files, no tests (there is nothing to test — it's pure glue code).
+- `icon.rs` generates a monochrome bullseye icon programmatically (no image crate needed)
+- `tray.rs` owns the menu bar icon setup and the blocking event loop
+- `main.rs` is a thin entry point that passes the icon and portal URL to the tray module
 
 ## Key Constants
 
@@ -52,4 +56,5 @@ There are no modules, no config files, no tests (there is nothing to test — it
 - Keep it minimal — this app does one thing and should stay simple
 - No unnecessary abstractions or over-engineering
 - British English in comments and documentation
-- The icon is a placeholder — will be replaced with a branded asset
+- The bullseye icon is generated in code — see ADR-002 for rationale
+- Architecture decisions are recorded in `docs/adr/`
