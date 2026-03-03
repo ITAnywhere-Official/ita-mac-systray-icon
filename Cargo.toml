@@ -1,6 +1,6 @@
 [package]
 name = "ita-mac-systray-icon"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "A macOS menu bar tray icon that links to the IT Anywhere self-service portal"
 repository = "https://github.com/ITAnywhere-Official/ita-mac-systray-icon"
@@ -10,3 +10,12 @@ license = "LicenseRef-Proprietary"
 open = "5.3.3"
 tao = "0.34.5"
 tray-icon = "0.21.3"
+
+[package.metadata.packager]
+product-name = "IT Anywhere Tray"
+identifier = "com.itanywhere.systray"
+formats = ["app", "dmg"]
+
+[package.metadata.packager.macos]
+background-app = true
+minimum-system-version = "11.0"

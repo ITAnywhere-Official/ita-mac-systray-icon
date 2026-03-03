@@ -22,19 +22,43 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Install cargo-packager
+        run: cargo install cargo-packager --locked
+
       - name: Build release binary
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Rename binary with target suffix
+      - name: Rename raw binary with target suffix
         run: |
           cp target/${{ matrix.target }}/release/ita-mac-systray-icon \
              ita-mac-systray-icon-${{ matrix.target }}
 
-      - name: Upload build artifact
+      - name: Package as .app and .dmg
+        run: cargo packager --release --target ${{ matrix.target }}
+
+      - name: Rename DMG with target suffix
+        run: |
+          DMG=$(find . -name "*.dmg" -type f | head -1)
+          if [ -n "$DMG" ]; then
+            cp "$DMG" "ITAnywhereTray-${{ matrix.target }}.dmg"
+          else
+            echo "::warning::No DMG found, listing target directory for debugging"
+            find target -type f -name "*.dmg" -o -name "*.app" 2>/dev/null || true
+            ls -la target/${{ matrix.target }}/release/ || true
+          fi
+
+      - name: Upload raw binary
         uses: actions/upload-artifact@v4
         with:
           name: ita-mac-systray-icon-${{ matrix.target }}
           path: ita-mac-systray-icon-${{ matrix.target }}
+
+      - name: Upload DMG installer
+        if: hashFiles('ITAnywhereTray-*.dmg') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ITAnywhereTray-${{ matrix.target }}.dmg
+          path: ITAnywhereTray-${{ matrix.target }}.dmg
 
   release:
     needs: build
@@ -52,4 +76,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: artifacts/*/ita-mac-systray-icon-*
+          files: |
+            artifacts/*/ita-mac-systray-icon-*
+            artifacts/*/*.dmg
