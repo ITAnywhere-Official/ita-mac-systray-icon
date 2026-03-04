@@ -18,7 +18,7 @@ pub fn run(icon: tray_icon::Icon, portal_url: &str) {
     let event_loop = EventLoopBuilder::new().build();
 
     let menu = Menu::new();
-    let open_portal = MenuItem::new("Open Self-Service Portal", true, None);
+    let open_portal = MenuItem::new("Self-Service Portal", true, None);
     let quit = MenuItem::new("Quit", true, None);
     menu.append(&open_portal).expect("failed to add menu item");
     menu.append(&quit).expect("failed to add menu item");
