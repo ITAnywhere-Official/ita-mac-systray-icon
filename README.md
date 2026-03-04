@@ -15,8 +15,8 @@ This is a **macOS-targeted** application, but the code is cross-platform (the `t
 
 Key differences when running on non-macOS:
 
-- **Template image tinting** — the monochrome black+alpha icon is designed for macOS's automatic light/dark mode tinting. On Windows it appears as a plain dark icon in the system tray (functional, but not macOS-native looking).
-- **Deployment** — the `launchd` plist and N-central deployment scripts in this README are macOS-specific. Windows auto-start would use the registry or startup folder instead, but this is not a supported deployment target.
+- **Icon appearance** — the ITA logo icon is designed for macOS menu bars. On Windows it appears as a standard system tray icon (functional, but not macOS-native looking).
+- **Deployment** — the `.app` bundle, `.dmg` installer, and `launchd` plist are macOS-specific. Windows is not a supported deployment target.
 
 ## Building
 
@@ -27,11 +27,22 @@ Key differences when running on non-macOS:
 
 ### Compile
 
-```bashc
+```bash
 cargo build --release
 ```
 
 The binary will be at `target/release/ita-mac-systray-icon`.
+
+### Packaging (.app / .dmg)
+
+To produce a macOS `.app` bundle and `.dmg` installer:
+
+```bash
+cargo install cargo-packager --locked
+cargo packager --release
+```
+
+Output is written to `target/release/` (e.g., `IT Anywhere Tray.app`, `IT Anywhere Tray.dmg`).
 
 ### Cross-Compiling from Non-Mac
 
@@ -47,23 +58,13 @@ cargo build --release --target aarch64-apple-darwin
 
 ## Downloads
 
-Pre-built macOS binaries are available from GitHub Releases:
+A `.dmg` installer is available from GitHub Releases:
 
-**Latest release:** https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/tag/v0.1.0
+**Latest release:** https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/latest
 
-| Binary                                      | Target                      |
-|---------------------------------------------|-----------------------------|
-| `ita-mac-systray-icon-aarch64-apple-darwin` | Apple Silicon (M1/M2/M3/M4) |
-| `ita-mac-systray-icon-x86_64-apple-darwin`  | Intel Mac                   |
+Download the `.dmg`, open it, and drag **IT Anywhere Tray** to Applications (or deploy via your RMM/MDM tool).
 
-### Quick Test
-
-```bash
-chmod +x ~/Downloads/ita-mac-systray-icon-*
-~/Downloads/ita-mac-systray-icon-*
-```
-
-> **Note:** macOS may block the binary as it's from an unidentified developer. Go to **System Settings → Privacy & Security** and click "Allow Anyway", then run it again.
+> **Note:** macOS may block the app as it's from an unidentified developer. Go to **System Settings → Privacy & Security** and click "Allow Anyway", then open it again.
 
 ## Deployment
 
@@ -71,8 +72,8 @@ This application is intended to be deployed to client machines via **N-central**
 
 ### Deployment Steps
 
-1. Download the appropriate binary from [GitHub Releases](https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/latest)
-2. Distribute the binary to the target Mac endpoint (e.g., `/usr/local/bin/ita-mac-systray-icon`)
+1. Download the `.dmg` from [GitHub Releases](https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/latest)
+2. Install the `.app` to the target Mac endpoint (e.g., `/Applications/IT Anywhere Tray.app`)
 3. Install the launch agent plist so it starts automatically at user login
 
 ### Launch Agent (Auto-Start)
@@ -89,7 +90,7 @@ Create the file `~/Library/LaunchAgents/com.itanywhere.systray.plist`:
     <string>com.itanywhere.systray</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/local/bin/ita-mac-systray-icon</string>
+        <string>/Applications/IT Anywhere Tray.app/Contents/MacOS/ita-mac-systray-icon</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -111,15 +112,19 @@ An N-central automation policy can run a script like:
 
 ```bash
 #!/bin/bash
-# Deploy ita-mac-systray-icon
+# Deploy IT Anywhere Tray via DMG
 
-BINARY_URL="https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/latest/download/ita-mac-systray-icon-aarch64-apple-darwin"
-INSTALL_PATH="/usr/local/bin/ita-mac-systray-icon"
+DMG_URL="https://github.com/ITAnywhere-Official/ita-mac-systray-icon/releases/latest/download/IT-Anywhere-Tray.dmg"
+DMG_PATH="/tmp/IT-Anywhere-Tray.dmg"
+APP_NAME="IT Anywhere Tray.app"
 PLIST_PATH="/Library/LaunchAgents/com.itanywhere.systray.plist"
 
-# Download binary
-curl -fsSL "$BINARY_URL" -o "$INSTALL_PATH"
-chmod +x "$INSTALL_PATH"
+# Download and mount DMG
+curl -fsSL "$DMG_URL" -o "$DMG_PATH"
+hdiutil attach "$DMG_PATH" -nobrowse -quiet
+cp -R "/Volumes/IT Anywhere Tray/$APP_NAME" "/Applications/"
+hdiutil detach "/Volumes/IT Anywhere Tray" -quiet
+rm "$DMG_PATH"
 
 # Install launch agent (for all users)
 cat > "$PLIST_PATH" << 'EOF'
@@ -132,7 +137,7 @@ cat > "$PLIST_PATH" << 'EOF'
     <string>com.itanywhere.systray</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/local/bin/ita-mac-systray-icon</string>
+        <string>/Applications/IT Anywhere Tray.app/Contents/MacOS/ita-mac-systray-icon</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
