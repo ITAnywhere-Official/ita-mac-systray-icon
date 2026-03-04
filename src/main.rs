@@ -7,6 +7,6 @@ mod tray;
 const PORTAL_URL: &str = "https://itanywhere.halopsa.com/portal/";
 
 fn main() {
-    let icon = icon::create_bullseye_icon(22);
+    let icon = icon::load_icon();
     tray::run(icon, PORTAL_URL);
 }

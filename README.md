@@ -27,7 +27,7 @@ Key differences when running on non-macOS:
 
 ### Compile
 
-```bash
+```bashc
 cargo build --release
 ```
 
@@ -155,21 +155,19 @@ https://itanywhere.halopsa.com/portal/
 
 ## Icon
 
-The application generates a **bullseye icon** programmatically — inspired by the target/bullseye motif in the IT Anywhere logo. It's drawn as monochrome black with alpha transparency, making it a macOS "template image" that automatically adapts to light and dark menu bars.
+The menu bar icon uses the official ITA logo. Two PNG sizes are provided:
 
-No external image files or additional dependencies are needed.
+- **22x22 px** (`icon-22x22.png`) — @1x for standard displays
+- **44x44 px** (`icon-44x44.png`) — @2x for Retina displays
 
-### Improving the Icon
+Both PNGs are generated from `assets/icon.svg`, a true vector SVG (paths, not embedded bitmaps). To regenerate after editing the SVG:
 
-For a polished release, the programmatic icon should be replaced with designer-produced PNG assets:
+```bash
+resvg assets/icon.svg assets/icon-22x22.png -w 22 -h 22
+resvg assets/icon.svg assets/icon-44x44.png -w 44 -h 44
+```
 
-- **22x22 px** (@1x) for standard displays
-- **44x44 px** (@2x) for Retina displays
-- PNG format with transparency
-- Monochrome recommended (macOS applies light/dark mode tinting automatically to template images)
-- The bullseye/target from the ITA logo is the recommended motif
-
-See [ADR-002](docs/adr/002-programmatic-icon-generation.md) for the rationale behind the current approach.
+The 44x44 PNG is embedded in the binary at compile time via `include_bytes!`. Install `resvg` with `cargo install resvg`.
 
 ## Licence
 
